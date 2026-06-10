@@ -48,67 +48,8 @@ function Base.show(io::IO, sol::FiniteStateDemographicSolution)
         sol.retcode, ")")
 end
 
-# ----------------------------------------------------------------------------
-# Generator -> reactions
-# ----------------------------------------------------------------------------
-
-# Propensity for a first-order reaction with rate coefficient `coef` acting on
-# state `i`: a fresh closure per call avoids loop-capture issues.
-_linear_propensity(coef, i) = (n, p, t) -> coef * n[i]
-
-"""
-    generator_reactions(G; source=nothing)
-
-Build a `DemographicReactionSystem` from an `n × n` generator `G` whose
-conditional mean reproduces `dn/dt = G·n` exactly. Off-diagonal entries
-`G[j,i] > 0` become **migration** reactions `i → j` (`-eᵢ + eⱼ`); each state's
-net column sum becomes a self **birth** (`+eᵢ`, if positive) or **death**
-(`-eᵢ`, if negative); a constant nonnegative `source` vector adds immigration.
-
-The mean is exact for any generator. The *fluctuation* structure follows this
-migration-plus-net-birth/death convention, which is the correct continuous-time
-Markov chain when off-diagonal flows are genuine movements (e.g. epidemic or
-physiological-condition transitions). For models where off-diagonal entries are
-fecundity (a parent persists while producing offspring), build the reactions
-explicitly via [`FiniteStateReactionProblem`] so the stoichiometry is right.
-"""
-function generator_reactions(G::AbstractMatrix; source = nothing)
-    n = size(G, 1)
-    size(G, 2) == n || throw(DimensionMismatch("generator must be square; got $(size(G))"))
-    reactions = DemographicReaction[]
-    for i in 1:n, j in 1:n
-        i == j && continue
-        r = G[j, i]
-        if r > 0
-            push!(reactions, DemographicReaction(_linear_propensity(r, i), n, i => -1, j => +1))
-        elseif r < 0
-            throw(ArgumentError(
-                "off-diagonal generator entry G[$j,$i] = $r is negative; not a valid rate"))
-        end
-    end
-    for i in 1:n
-        cs = sum(@view G[:, i])
-        if cs > 0
-            push!(reactions, DemographicReaction(_linear_propensity(cs, i), n, i => +1))
-        elseif cs < 0
-            push!(reactions, DemographicReaction(_linear_propensity(-cs, i), n, i => -1))
-        end
-    end
-    if source !== nothing
-        src = collect(source)
-        length(src) == n || throw(DimensionMismatch(
-            "source length $(length(src)) does not match generator size $n"))
-        for i in 1:n
-            si = src[i]
-            if si > 0
-                push!(reactions, DemographicReaction(float(si), n, i => +1))  # immigration
-            elseif si < 0
-                throw(ArgumentError("source[$i] = $si < 0 is not a valid immigration rate"))
-            end
-        end
-    end
-    return DemographicReactionSystem(n, reactions)
-end
+# `generator_reactions` lives in StructuredPopulationCore (shared with the
+# continuous-state backend) and is re-exported by this package.
 
 # ----------------------------------------------------------------------------
 # Solve
