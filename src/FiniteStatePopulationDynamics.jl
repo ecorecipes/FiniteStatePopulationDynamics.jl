@@ -13,6 +13,7 @@ module FiniteStatePopulationDynamics
 
 using CommonSolve
 using LinearAlgebra
+using Random
 using SciMLBase
 using StructuredPopulationCore
 
@@ -30,6 +31,12 @@ export AbstractTimeSemantics, DiscreteTime, ContinuousTime
 export AbstractStateSemantics, FiniteState, ContinuousState
 export DirectIteration, EigenAnalysis
 export AbstractStateDomain, DiscreteDomain, n_states
+
+# Demographic stochasticity (continuous-time Markov jump process)
+export Demographic
+export DemographicReaction, DemographicReactionSystem, gillespie
+export FiniteStateReactionProblem, FiniteStateDemographicSolution
+export generator_reactions, demographic_ensemble
 
 """
     AbstractFiniteStateDynamicsStructure
@@ -67,6 +74,7 @@ include("problems.jl")
 include("sciml_interface.jl")
 include("solve.jl")
 include("events.jl")
+include("demographic.jl")
 using CommonSolve: solve
 
 export state_index, set_state!, add_to_state!, scale_state!, transfer_state!
