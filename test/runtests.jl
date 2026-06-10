@@ -9,4 +9,5 @@ using FiniteStatePopulationDynamics
     @test n_states(DiscreteDomain([:juvenile, :adult])) == 2
     include("test_generators.jl")
     include("test_events.jl")
+    include("test_demographic.jl")
 end
