@@ -3,11 +3,11 @@
 
 Finite-state, continuous-time population dynamics backends.
 
-This package is the deterministic generator-based sibling to
-`MatrixProjectionModels.jl`. Broad stochastic continuous-time semantics are
-intentionally deferred; future stochastic support should be introduced as
-extension packages layered on top of these finite-state continuous-time
-structures and problem types.
+This package is the continuous-time finite-state sibling to
+`MatrixProjectionModels.jl`. It provides deterministic generator/delay problem
+types lowered to SciML ODE/DDE problems, event/callback helpers, and exact
+demographic stochasticity for finite-population continuous-time Markov jump
+processes.
 """
 module FiniteStatePopulationDynamics
 
@@ -16,6 +16,7 @@ using LinearAlgebra
 using Random
 using SciMLBase
 using StructuredPopulationCore
+import SciMLBase: remake
 
 export AbstractFiniteStateDynamicsStructure
 export SimpleFiniteStateStructure, GeneralFiniteStateStructure

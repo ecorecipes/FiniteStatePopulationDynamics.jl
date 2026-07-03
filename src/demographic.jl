@@ -23,8 +23,20 @@ struct FiniteStateReactionProblem{R, U, T<:Real, P} <: AbstractFiniteStateDynami
     p::P
 end
 
+function _require_integer_counts(u0; name::AbstractString)
+    u0i = Vector{Int}(undef, length(u0))
+    for i in eachindex(u0)
+        xi = round(Int, u0[i])
+        isapprox(u0[i], xi; atol = 1e-8, rtol = 0) || throw(ArgumentError(
+            "exact demographic solves require integer initial counts; " *
+            "$(name)[$i] = $(u0[i]) is not integer-valued"))
+        u0i[i] = xi
+    end
+    return u0i
+end
+
 function FiniteStateReactionProblem(reactions::DemographicReactionSystem, u0, tspan; p = nothing)
-    u0i = round.(Int, u0)
+    u0i = _require_integer_counts(u0; name = "u0")
     length(u0i) == reactions.n_states || throw(DimensionMismatch(
         "u0 length $(length(u0i)) does not match reaction system size $(reactions.n_states)"))
     T = promote_type(typeof(float(tspan[1])), typeof(float(tspan[2])))
@@ -72,6 +84,12 @@ function _sample_on_grid(ts, us, grid)
     return out
 end
 
+function _demographic_retcode(sys, ts, us, tspan, p, max_events::Int)
+    length(ts) == max_events + 1 || return :Success
+    ts[end] < float(tspan[2]) || return :Success
+    return total_propensity(sys, us[end], p, ts[end]) > 0 ? :MaxIters : :Success
+end
+
 """
     solve(prob::FiniteStateReactionProblem, ::Demographic; rng, saveat=nothing, max_events)
 
@@ -85,12 +103,13 @@ function CommonSolve.solve(prob::FiniteStateReactionProblem, ::Demographic;
         max_events::Int = 1_000_000)
     ts, us = gillespie(rng, prob.reactions, prob.u0, prob.tspan;
         p = prob.p, max_events = max_events)
+    retcode = _demographic_retcode(prob.reactions, ts, us, prob.tspan, prob.p, max_events)
     if saveat === nothing
-        return FiniteStateDemographicSolution(collect(float.(ts)), us, :Success)
+        return FiniteStateDemographicSolution(collect(float.(ts)), us, retcode)
     end
     grid = _demographic_grid(prob.tspan, saveat)
     return FiniteStateDemographicSolution(collect(float.(grid)),
-        _sample_on_grid(ts, us, grid), :Success)
+        _sample_on_grid(ts, us, grid), retcode)
 end
 
 """

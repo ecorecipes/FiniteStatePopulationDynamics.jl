@@ -45,6 +45,22 @@ _mean(xs) = sum(xs) / length(xs)
         @test quasi_extinction(totals; threshold=1.0).prob_extinct > 0.7
     end
 
+    @testset "exact solves validate integer initial counts" begin
+        sys = DemographicReactionSystem(1, [DemographicReaction(1.0, 1, 1 => +1)])
+        prob = FiniteStateReactionProblem(sys, [10.0], (0.0, 0.01))
+        @test prob.u0 == [10]
+        @test solve(prob, Demographic(); rng=rng).u[1] == [10]
+        @test_throws ArgumentError FiniteStateReactionProblem(sys, [10.25], (0.0, 0.01))
+    end
+
+    @testset "retcode reports max_events truncation" begin
+        sys = DemographicReactionSystem(1, [DemographicReaction(1000.0, 1, 1 => +1)])
+        prob = FiniteStateReactionProblem(sys, [1], (0.0, 1.0))
+        sol = solve(prob, Demographic(); rng=rng, max_events=1)
+        @test sol.retcode == :MaxIters
+        @test length(sol.t) == 2
+    end
+
     @testset "generator_reactions reproduces dn/dt = G·n in mean (with growth)" begin
         G = [0.2 0.5; 0.3 -0.7]                           # net growth (dominant eigenvalue > 0)
         n0 = [20, 20]

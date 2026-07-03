@@ -1,7 +1,7 @@
 import DelayDiffEq
 import OrdinaryDiffEq
 
-using SciMLBase: DDEProblem, ODEProblem
+using SciMLBase: DDEProblem, ODEProblem, remake as sciml_remake
 
 @testset "Finite-state generator problems" begin
     domain = DiscreteDomain([:juvenile, :adult])
@@ -20,6 +20,7 @@ using SciMLBase: DDEProblem, ODEProblem
 
         prob2 = remake(prob; tspan = (0.0, 3.0))
         @test prob2.tspan == (0.0, 3.0)
+        @test sciml_remake(prob; tspan = (0.0, 4.0)).tspan == (0.0, 4.0)
     end
 
     @testset "FiniteStateGeneratorProblem with callable generator" begin
