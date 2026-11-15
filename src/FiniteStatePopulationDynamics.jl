@@ -17,6 +17,10 @@ using Random
 using SciMLBase
 using StructuredPopulationCore
 import SciMLBase: remake
+# Like `remake`, `demographic_ensemble` is one function across the model packages: it is
+# declared in StructuredPopulationCore and extended here, so the name does not clash when
+# several packages are loaded together.
+import StructuredPopulationCore: demographic_ensemble
 
 export AbstractFiniteStateDynamicsStructure
 export SimpleFiniteStateStructure, GeneralFiniteStateStructure

@@ -42,6 +42,8 @@ _mean(xs) = sum(xs) / length(xs)
         prob2 = FiniteStateReactionProblem(sys, [40], (0.0, 30.0))
         totals, _ = demographic_ensemble(prob2; n_reps=400, saveat=1.0, rng=rng)
         @test size(totals, 1) == 31
+        # one function across the model packages, declared in the core package and extended here
+        @test demographic_ensemble === parentmodule(quasi_extinction).demographic_ensemble
         @test quasi_extinction(totals; threshold=1.0).prob_extinct > 0.7
     end
 
