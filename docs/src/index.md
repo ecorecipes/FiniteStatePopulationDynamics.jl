@@ -45,9 +45,7 @@ resilience(J), reactivity(J)
 ```
 
 ```@docs
-linearise(::FiniteStateGeneratorProblem)
-linearise(::DelayFiniteStateProblem)
-linearise(::FiniteStateReactionProblem)
+linearise
 ```
 
 ## Events and callbacks
