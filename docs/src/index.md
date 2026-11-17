@@ -26,6 +26,30 @@ to_dde_problem
 Use `CommonSolve.solve` with a SciML solver (e.g. `Tsit5()`, `MethodOfSteps`)
 to integrate the lowered problem.
 
+## Resilience operators
+
+`linearise` (from [ResilienceCore.jl](https://github.com/ecorecipes/ResilienceCore.jl), re-exported
+here) turns a generator problem into the operator whose stability and transient metrics apply: a
+`Generator` for a constant generator, a `ContinuousJacobian` at the equilibrium when there is a
+constant source, a `PeriodicOperator` for a periodic generator, and the Jacobian at a given
+equilibrium for a density-dependent model.
+
+```julia
+using FiniteStatePopulationDynamics, ResilienceCore
+
+G = [-0.5 0.1; 0.3 -0.2]
+prob = FiniteStateGeneratorProblem(G, DiscreteDomain([:juvenile, :adult]), [1.0, 1.0], (0.0, 10.0);
+                                   source = [0.2, 0.0])
+J = linearise(prob)              # ContinuousJacobian at u* = −G⁻¹ b
+resilience(J), reactivity(J)
+```
+
+```@docs
+linearise(::FiniteStateGeneratorProblem)
+linearise(::DelayFiniteStateProblem)
+linearise(::FiniteStateReactionProblem)
+```
+
 ## Events and callbacks
 
 ```@docs

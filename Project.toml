@@ -1,30 +1,35 @@
 name = "FiniteStatePopulationDynamics"
 uuid = "c910fb8b-fb88-47fe-a579-bc7a7e1444df"
 authors = ["Simon Frost"]
-version = "0.1.2"
+version = "0.1.3"
 
 [deps]
 CommonSolve = "38540f10-b2f7-11e9-35d8-d573e4eb0ff2"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+ResilienceCore = "e31f93f6-99b1-4a70-b0c5-c402beffe4e1"
 SciMLBase = "0bca4576-84f4-4d90-8ffe-ffa030f20462"
 StructuredPopulationCore = "33358fd2-7d60-4541-bded-caea801370e0"
 
 [sources]
+ResilienceCore = {url = "https://github.com/ecorecipes/ResilienceCore.jl"}
 StructuredPopulationCore = {path = "../ProjectionModels.jl"}
 
 [compat]
 CommonSolve = "0.2"
+ForwardDiff = "0.10, 1"
 LinearAlgebra = "1"
 Random = "1"
+ResilienceCore = "0.1"
 SciMLBase = "2"
 StructuredPopulationCore = "0.1.2"
 julia = "1.11"
 
 [extras]
 DelayDiffEq = "bcd4f6db-9728-5f36-b5f7-82caef46ccdb"
+ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
 OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test", "OrdinaryDiffEq", "DelayDiffEq"]
+test = ["Test", "OrdinaryDiffEq", "DelayDiffEq", "ForwardDiff"]
