@@ -10,4 +10,5 @@ using FiniteStatePopulationDynamics
     include("test_generators.jl")
     include("test_events.jl")
     include("test_demographic.jl")
+    include("test_resilience.jl")
 end

@@ -21,6 +21,9 @@ import SciMLBase: remake
 # in StructuredPopulationCore and extended here, so the names do not clash when several
 # packages are loaded together.
 import StructuredPopulationCore: demographic_ensemble, to_ode_problem, to_dde_problem, set_state!
+# Resilience operators: `linearise` is ResilienceCore's function, extended in resilience.jl.
+import ResilienceCore
+using ResilienceCore: linearise
 
 export AbstractFiniteStateDynamicsStructure
 export SimpleFiniteStateStructure, GeneralFiniteStateStructure
@@ -80,6 +83,9 @@ include("sciml_interface.jl")
 include("solve.jl")
 include("events.jl")
 include("demographic.jl")
+include("resilience.jl")
+
+export linearise
 using CommonSolve: solve
 
 export state_index, set_state!, add_to_state!, scale_state!, transfer_state!

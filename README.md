@@ -28,6 +28,11 @@ types here, rather than widening the core backend.
   via a dedicated weakdep extension so valued/labelled categorical nets can
   lower directly to a finite-state continuous-time problem.
 
+- **Resilience operators**: `linearise` (from
+  [ResilienceCore.jl](https://github.com/ecorecipes/ResilienceCore.jl)) gives the
+  generator, the Jacobian at an equilibrium, or the periodic operator of a
+  problem, for ResilienceCore's stability and transient metrics.
+
 ## Installation
 
 This package is not yet registered in the Julia General registry. Install
