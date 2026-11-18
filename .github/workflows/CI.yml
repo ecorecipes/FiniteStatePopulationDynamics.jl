@@ -48,3 +48,31 @@ jobs:
       - uses: julia-actions/julia-runtest@v1
         with:
           project: FiniteStatePopulationDynamics.jl
+  docs:
+    name: Documentation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      statuses: write
+    steps:
+      - name: Checkout FiniteStatePopulationDynamics.jl
+        uses: actions/checkout@v4
+        with:
+          path: FiniteStatePopulationDynamics.jl
+      - name: Checkout ProjectionModels.jl
+        uses: actions/checkout@v4
+        with:
+          repository: ecorecipes/ProjectionModels.jl
+          path: ProjectionModels.jl
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1'
+      - uses: julia-actions/cache@v2
+        with:
+          cache-compiled: 'true'
+      - name: Install dependencies
+        run: julia --project=FiniteStatePopulationDynamics.jl/docs -e 'using Pkg; Pkg.instantiate()'
+      - name: Build and deploy docs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: julia --project=FiniteStatePopulationDynamics.jl/docs FiniteStatePopulationDynamics.jl/docs/make.jl
